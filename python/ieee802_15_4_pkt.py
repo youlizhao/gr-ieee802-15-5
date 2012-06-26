@@ -24,9 +24,10 @@
 # Modified by: Thomas Schmid, Leslie Choong, Sanna Leidelof
 #
 
-import Numeric
+import numpy
 
-from gnuradio import gr, packet_utils, gru
+from gnuradio import gr, gru
+from gnuradio.digital import packet_utils
 from gnuradio import ucla
 import crc16
 import gnuradio.gr.gr_threading as _threading
@@ -262,7 +263,7 @@ class _queue_watcher_thread(_threading.Thread):
             ok = 0
             payload = msg.to_string()
 
-            print "received packet "
+            #print "received packet "
             if len(payload) > 2:
                 crc = crc16.CRC16()
             else:
@@ -272,8 +273,8 @@ class _queue_watcher_thread(_threading.Thread):
             crc.update(payload[1:-2])
 
             crc_check = crc.intchecksum()
-            print "checksum: %s, received: %s" % (crc_check,
-                        str(ord(payload[-2]) + ord(payload[-1])*256))
+            #print "checksum: %s, received: %s" % (crc_check,
+                        #str(ord(payload[-2]) + ord(payload[-1])*256))
             ok = (crc_check == ord(payload[-2]) + ord(payload[-1])*256)
             msg_payload = payload
 

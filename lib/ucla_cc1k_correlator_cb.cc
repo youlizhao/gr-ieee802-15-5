@@ -205,7 +205,7 @@ ucla_cc1k_correlator_cb::update_avg(float x)
   d_accum -= d_avgbuf[d_avbi];
   d_avgbuf[d_avbi] = x;
   d_accum += x;
-  d_avbi = (d_avbi + 1) & (AVG_PERIOD-1);
+  d_avbi = (d_avbi + 1) & (AVG_PERIOD - 1);
 }
   
 int 

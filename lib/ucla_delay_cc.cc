@@ -38,7 +38,7 @@ ucla_delay_cc::ucla_delay_cc (const int delay)
 		   gr_make_io_signature (1, 1, sizeof (gr_complex)),
 		   gr_make_io_signature (1, 1, sizeof (gr_complex)))
 {
-  d_delay = delay-1;
+  d_delay = delay - 1;
   set_history (delay);
 }
 

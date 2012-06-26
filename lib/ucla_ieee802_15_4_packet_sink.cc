@@ -125,7 +125,7 @@ ucla_ieee802_15_4_packet_sink::decode_chips(unsigned int chips){
   for(i=0; i<16; i++) {
     // FIXME: we can store the last chip
     // ignore the first and last chip since it depends on the last chip.
-    unsigned int threshold = gr_count_bits32((chips&0x7FFFFFFE) ^ (CHIP_MAPPING[i]&0x7FFFFFFE));
+    unsigned int threshold = gr_count_bits32((chips & 0x7FFFFFFE) ^ (CHIP_MAPPING[i] & 0x7FFFFFFE));
 
     if (threshold < min_threshold) {
         best_match = i;
@@ -135,7 +135,7 @@ ucla_ieee802_15_4_packet_sink::decode_chips(unsigned int chips){
 
   if (min_threshold < d_threshold) {
       if (VERBOSE)
-          fprintf(stderr, "Found sequence with %d errors at 0x%x\n", min_threshold, (chips&0x7FFFFFFE) ^ (CHIP_MAPPING[best_match]&0x7FFFFFFE)), fflush(stderr);
+          fprintf(stderr, "Found sequence with %d errors at 0x%x\n", min_threshold, (chips & 0x7FFFFFFE) ^ (CHIP_MAPPING[best_match] & 0x7FFFFFFE)), fflush(stderr);
       // LQI: Average number of chips correct * MAX_LQI_SAMPLES
       //
       if (d_lqi_sample_count < MAX_LQI_SAMPLES) {
@@ -143,7 +143,7 @@ ucla_ieee802_15_4_packet_sink::decode_chips(unsigned int chips){
           d_lqi_sample_count++;
       }
 
-    return (char)best_match&0xF;
+    return (char)best_match & 0xF;
   }
 
   return 0xFF;
@@ -216,7 +216,7 @@ int ucla_ieee802_15_4_packet_sink::work (int noutput_items,
 	// The first if block syncronizes to chip sequences.
 	if(d_preamble_cnt == 0){
 	  unsigned int threshold;
-	  threshold = gr_count_bits32((d_shift_reg&0x7FFFFFFE) ^ (CHIP_MAPPING[0]&0x7FFFFFFE));
+	  threshold = gr_count_bits32((d_shift_reg & 0x7FFFFFFE) ^ (CHIP_MAPPING[0] & 0x7FFFFFFE));
 	  if(threshold < d_threshold) {
 	    //  fprintf(stderr, "Threshold %d d_preamble_cnt: %d\n", threshold, d_preamble_cnt);
 	    //if ((d_shift_reg&0xFFFFFE) == (CHIP_MAPPING[0]&0xFFFFFE)) {
@@ -232,16 +232,16 @@ int ucla_ieee802_15_4_packet_sink::work (int noutput_items,
 	    d_chip_cnt = 0;
 	    
 	    if(d_packet_byte == 0) {
-	      if (gr_count_bits32((d_shift_reg&0x7FFFFFFE) ^ (CHIP_MAPPING[0]&0xFFFFFFFE)) <= d_threshold) {	
+	      if (gr_count_bits32((d_shift_reg & 0x7FFFFFFE) ^ (CHIP_MAPPING[0] & 0xFFFFFFFE)) <= d_threshold) {	
 		if (VERBOSE2)
 		  fprintf(stderr,"Found %d 0 in chip sequence\n", d_preamble_cnt),fflush(stderr);	
 		// we found an other 0 in the chip sequence
 		d_packet_byte = 0;
 		d_preamble_cnt ++;
-	      } else if (gr_count_bits32((d_shift_reg&0x7FFFFFFE) ^ (CHIP_MAPPING[7]&0xFFFFFFFE)) <= d_threshold) {
+	      } else if (gr_count_bits32((d_shift_reg & 0x7FFFFFFE) ^ (CHIP_MAPPING[7] & 0xFFFFFFFE)) <= d_threshold) {
 		if (VERBOSE2)
 		  fprintf(stderr,"Found first SFD\n", d_preamble_cnt),fflush(stderr);	
-		d_packet_byte = 7<<4;
+		d_packet_byte = 7 << 4;
 	      } else {
 		// we are not in the synchronization header
 		if (VERBOSE2)
@@ -251,7 +251,7 @@ int ucla_ieee802_15_4_packet_sink::work (int noutput_items,
 	      }
 
 	    } else {
-	      if (gr_count_bits32((d_shift_reg&0x7FFFFFFE) ^ (CHIP_MAPPING[10]&0xFFFFFFFE)) <= d_threshold) {
+	      if (gr_count_bits32((d_shift_reg & 0x7FFFFFFE) ^ (CHIP_MAPPING[10] & 0xFFFFFFFE)) <= d_threshold) {
 		d_packet_byte |= 0xA;
 		if (VERBOSE2)
 		  fprintf(stderr,"Found sync, 0x%x\n", d_packet_byte),fflush(stderr);	
