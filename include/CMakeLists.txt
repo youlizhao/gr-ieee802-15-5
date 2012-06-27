@@ -30,5 +30,5 @@ install(FILES
 		ucla_manchester_ff.h 
 		ucla_qpsk_modulator_cc.h 
 		ucla_symbols_to_chips_bi.h 
-    DESTINATION include/ieee802-15-4
+    DESTINATION include/gnuradio
 )

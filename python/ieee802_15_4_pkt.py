@@ -258,7 +258,7 @@ class _queue_watcher_thread(_threading.Thread):
 
     def run(self):
         while self.keep_running:
-            print "802_15_4_pkt: waiting for packet"
+            #print "802_15_4_pkt: waiting for packet"
             msg = self.rcvd_pktq.delete_head()
             ok = 0
             payload = msg.to_string()
