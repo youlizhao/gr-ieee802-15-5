@@ -39,16 +39,18 @@ foreach(incdir ${GRUEL_INCLUDE_DIRS})
     list(APPEND GR_SWIG_INCLUDE_DIRS ${incdir}/gruel/swig)
 endforeach(incdir)
 
+link_directories(${UCLA_LIBRARY_DIRS})
+
 set(GR_SWIG_LIBRARIES gnuradio-ieee802-15-4)
-#set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/howto_swig_doc.i)
+set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/ucla_swig_doc.i)
 set(GR_SWIG_DOC_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
-GR_SWIG_MAKE(ieee802_15_4_swig ucla.i)
+GR_SWIG_MAKE(ucla ucla.i)
 
 ########################################################################
 # Install the build swig module
 ########################################################################
-GR_SWIG_INSTALL(TARGETS ieee802_15_4_swig DESTINATION ${GR_PYTHON_DIR}/ieee802-15-4)
+GR_SWIG_INSTALL(TARGETS ucla DESTINATION ${GR_PYTHON_DIR}/gnuradio)
 
 ########################################################################
 # Install swig .i files for development
@@ -56,6 +58,6 @@ GR_SWIG_INSTALL(TARGETS ieee802_15_4_swig DESTINATION ${GR_PYTHON_DIR}/ieee802-1
 install(
     FILES
     ucla.i
-#    ${CMAKE_CURRENT_BINARY_DIR}/howto_swig_doc.i
-    DESTINATION ${GR_INCLUDE_DIR}/ieee802-15-4/swig
+    ${CMAKE_CURRENT_BINARY_DIR}/ucla_swig_doc.i
+    DESTINATION ${GR_INCLUDE_DIR}/ucla_blks/swig
 )

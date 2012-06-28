@@ -81,7 +81,7 @@ def main ():
         (pktno,) = struct.unpack('!H', payload[0:2])
         #print "ok = %5r  pktno = %4d  len(payload) = %4d  %d/%d" % (ok, pktno, len(payload),
                                                                   #st.nright, st.npkts)
-        #print "  payload: " + str(map(hex, map(ord, payload)))
+        print "  payload: " + str(map(hex, map(ord, payload)))
         if len(payload) > 28:
             (text,) = struct.unpack_from("16s", payload[26:])
             print " ------------------------"

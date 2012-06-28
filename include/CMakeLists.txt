@@ -22,7 +22,6 @@
 ########################################################################
 install(FILES
 		ucla_delay_cc.h 
-		ucla_interleave.h 
 		ucla_multichanneladd_cc.h 
 		ucla_sos_packet_sink.h 
 		ucla_cc1k_correlator_cb.h 

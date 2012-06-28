@@ -24,6 +24,8 @@
 #include "config.h"
 #endif
 
+#include <iostream>
+
 #include <ucla_delay_cc.h>
 
 // public constructor
@@ -38,6 +40,7 @@ ucla_delay_cc::ucla_delay_cc (const int delay)
 		   gr_make_io_signature (1, 1, sizeof (gr_complex)),
 		   gr_make_io_signature (1, 1, sizeof (gr_complex)))
 {
+	std::cerr << "hi!!" << std::endl;
   d_delay = delay - 1;
   set_history (delay);
 }
@@ -54,6 +57,8 @@ ucla_delay_cc::work (int noutput_items,
 {
   gr_complex *in = (gr_complex *) input_items[0];
   gr_complex *out = (gr_complex *) output_items[0];
+
+  std::cout << "ddelay = " << d_delay << std::endl;
 
   //fprintf(stderr, "."), fflush(stderr);
   for (int j = 0; j < noutput_items; j++)
