@@ -9,6 +9,7 @@
 from gnuradio import gr, eng_notation
 from gnuradio import uhd
 from gnuradio import ucla
+from gnuradio import filter
 from gnuradio.ucla_blks import ieee802_15_4_pkt
 from gnuradio.eng_option import eng_option
 from optparse import OptionParser
@@ -30,17 +31,21 @@ def pick_subdevice(u):
 class transmit_path(gr.top_block):
     def __init__(self, options):
         gr.top_block.__init__(self)
-        
+                
+        self._interp = 1
         self.samples_per_symbol = 2
         # chip rate?
-        self.symbol_rate = 1e6
+        self.symbol_rate = 2e6
+
         
         #self.sample_rate = 10e6
 
         self.u = uhd.usrp_sink(device_addr="addr0=192.168.10.2",stream_args=uhd.stream_args(cpu_format="fc32", channels=range(1)))
         
-        (self.sample_rate, self.samples_per_symbol) = self.set_sample_rate(self.symbol_rate, self.samples_per_symbol)
-        
+        #(self.sample_rate, self.samples_per_symbol) = self.set_sample_rate(self.symbol_rate, self.samples_per_symbol)
+        #self.u.set_bandwidth(5e6)
+        self.u.set_samp_rate(self.samples_per_symbol * self.symbol_rate * self._interp)
+        self.sample_rate = self.u.get_samp_rate()
         self.chan_num = options.channel
         self.u.set_center_freq(ieee802_15_4_pkt.chan_802_15_4.chan_map[self.chan_num])
 
@@ -49,19 +54,35 @@ class transmit_path(gr.top_block):
             options.gain = float(g.start() + g.stop()) / 2 + 5
             print "gain start:    " + str(g.start())
             print "gain end:      " + str(g.stop())
-            print "current gain:  " + str(options.gain)
+
 
         self.u.set_gain(options.gain)
-
+        print "current gain:  " + str(options.gain)
+        
         print "cordic_freq = %s" % (eng_notation.num_to_str(ieee802_15_4_pkt.chan_802_15_4.chan_map[self.chan_num]))
         print "samples_per_symbol = ", eng_notation.num_to_str(self.samples_per_symbol)
 
         # transmitter
         self.packet_transmitter = ieee802_15_4_pkt.ieee802_15_4_mod_pkts(self,
                 spb=int(self.samples_per_symbol), msgq_limit=2)
+        
+        
+        # interpolator
+        flt_size = 32
+        self._taps2 = filter.firdes.low_pass_2(flt_size,
+                                               flt_size*self.sample_rate,
+                                               3e6, 150e3,
+                                               attenuation_dB=3,
+                                               window=filter.firdes.WIN_BLACKMAN_hARRIS)
 
-        self.gain = gr.multiply_const_cc (0.4)
-        self.connect(self.packet_transmitter, self.gain, self.u)
+        # Construct the PFB interpolator filter
+        self.pfb = filter.pfb.interpolator_ccf(self._interp, self._taps2)
+
+        
+        
+
+        self.gain = gr.multiply_const_cc (0.9)
+        self.connect(self.packet_transmitter, self.pfb, self.gain, self.u)
        
         
     def set_sample_rate(self, sym_rate, req_sps):

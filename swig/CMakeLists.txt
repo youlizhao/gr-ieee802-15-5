@@ -39,7 +39,7 @@ foreach(incdir ${GRUEL_INCLUDE_DIRS})
     list(APPEND GR_SWIG_INCLUDE_DIRS ${incdir}/gruel/swig)
 endforeach(incdir)
 
-link_directories(${UCLA_LIBRARY_DIRS})
+link_directories(${CMAKE_BINARY_DIR}/lib)
 
 set(GR_SWIG_LIBRARIES gnuradio-ieee802-15-4)
 set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/ucla_swig_doc.i)
