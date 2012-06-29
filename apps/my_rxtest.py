@@ -126,11 +126,11 @@ def main ():
             221)           # Link Layer Type = 802.15.4 PHY Channel
     fout.write(pcap_glob_head)
 
-    r= gr.enable_realtime_scheduling()
-    if r == gr.RT_OK:
-        print "Enabled Realtime"
-    else:
-        print "Failed to enable Realtime"
+    #r= gr.enable_realtime_scheduling()
+    #if r == gr.RT_OK:
+    #    print "Enabled Realtime"
+    #else:
+    #    print "Failed to enable Realtime"
 
     tb = oqpsk_rx_graph(options, rx_callback_old)
     tb.start()
