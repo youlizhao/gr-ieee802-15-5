@@ -80,20 +80,20 @@ def main ():
 
         (pktno,) = struct.unpack('!H', payload[0:2])
         #print "ok = %5r  pktno = %4d  len(payload) = %4d  %d/%d" % (ok, pktno, len(payload),
-                                                                  #st.nright, st.npkts)
-        print "  payload: " + str(map(hex, map(ord, payload)))
-        if len(payload) > 28:
-            (text,) = struct.unpack_from("16s", payload[26:])
-            print " ------------------------"
-            print text
-            print " ------------------------"
+        print "ok  " + str(ok)                                                       #st.nright, st.npkts)
+        print "payload:\n" + str(map(hex, map(ord, payload)))
+        #if len(payload) > 28:
+        #    (text,) = struct.unpack_from("16s", payload[26:])
+        #    print " ------------------------"
+        #    print text
+        #    print " ------------------------"
         sys.stdout.flush()
 
         
     parser = OptionParser (option_class=eng_option)
     parser.add_option("-R", "--rx-subdev-spec", type="subdev", default=None,
                       help="select USRP Rx side A or B (default=first one with a daughterboard)")
-    parser.add_option ("-c", "--channel", type="eng_float", default=15,
+    parser.add_option ("-c", "--channel", type="eng_float", default=26,
                        help="Set 802.15.4 Channel to listen on", metavar="FREQ")
     parser.add_option ("-r", "--data-rate", type="eng_float", default=2000000)
     parser.add_option ("-f", "--filename", type="string",

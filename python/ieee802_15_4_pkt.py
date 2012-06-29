@@ -36,7 +36,7 @@ import struct
 
 MAX_PKT_SIZE = 128
 
-def make_ieee802_15_4_packet(FCF, seqNr, addressInfo, payload, pad_for_usrp=False, preambleLength=4, SFD=0xA7):
+def make_ieee802_15_4_packet(FCF, seqNr, addressInfo, payload, pad_for_usrp=True, preambleLength=4, SFD=0xA7):
     """
     Build a 802_15_4 packet
 
@@ -68,7 +68,7 @@ def make_ieee802_15_4_packet(FCF, seqNr, addressInfo, payload, pad_for_usrp=Fals
     if len(payload) > MAX_PKT_SIZE - 5 - len(addressInfo):
         raise ValueError, "len(payload) must be in [0, %d]" %(MAX_PKT_SIZE)
 
-    SHR = struct.pack("BBBBB", 0, 0, 0, 0, SFD)
+    SHR = struct.pack("BBBBBBB", 0, 0, 0, 0, 0, 0, SFD)
     PHR = struct.pack("B", 3 + len(addressInfo) + len(payload) + 2)
     MPDU = FCF + struct.pack("B", seqNr) + addressInfo + payload
     crc = crc16.CRC16()
@@ -105,7 +105,7 @@ def _npadding_bytes(pkt_byte_len, spb):
         return 0
     return byte_modulus - r
 
-def make_FCF(frameType=1, securityEnabled=0, framePending=0, acknowledgeRequest=0, intraPAN=0, destinationAddressingMode=0, sourceAddressingMode=0):
+def make_FCF(frameType=1, securityEnabled=0, framePending=0, acknowledgeRequest=0, intraPAN=1, destinationAddressingMode=10, sourceAddressingMode=3):
     """
     Build the FCF for the 802_15_4 packet
 
@@ -120,8 +120,8 @@ def make_FCF(frameType=1, securityEnabled=0, framePending=0, acknowledgeRequest=
         raise ValueError, " must be < "
     if intraPAN >= 2**1:
         raise ValueError, " must be < "
-    if destinationAddressingMode >= 2**2:
-        raise ValueError, " must be < "
+    #if destinationAddressingMode >= 2**2:
+    #    raise ValueError, " must be < "
     if sourceAddressingMode >= 2**2:
         raise ValueError, " must be < "
 
