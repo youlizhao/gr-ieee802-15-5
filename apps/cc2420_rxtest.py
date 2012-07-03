@@ -6,7 +6,7 @@
 # Modified by: Thomas Schmid, Leslie Choong, Mikhail Tadjikov
 #
   
-from gnuradio import gr, eng_notation, usrp2
+from gnuradio import gr, eng_notation, uhd
 from gnuradio.ucla_blks import ieee802_15_4_pkt
 from gnuradio.eng_option import eng_option
 from optparse import OptionParser
@@ -20,31 +20,31 @@ class stats(object):
     
 class oqpsk_rx_graph (gr.top_block):
     def __init__(self, options, rx_callback):
+        self.sample_rate = 10000000
         gr.top_block.__init__(self)
 
         if options.infile is None:
             # Initialize USRP2 block
-            u = usrp2.source_32fc(options.interface, options.mac_addr)
-            self.samples_per_symbol = 2
+            u = uhd.usrp_source(device_addr="addr0=192.168.10.2",stream_args=uhd.stream_args(cpu_format="fc32", channels=range(1)))
+            u.set_samp_rate(self.sample_rate)
+            self.samples_per_symbol = 5
             self.chan_num = options.channel
-            self.data_rate = int (u.adc_rate()
-                                  / self.samples_per_symbol
-                                  / options.decim_rate)
+            self.data_rate = int (self.sample_rate
+                                  / self.samples_per_symbol)
 
             u.set_center_freq(ieee802_15_4_pkt.chan_802_15_4.chan_map[self.chan_num])
-            u.set_decim(options.decim_rate)
-            u.set_gain(options.gain)
+            #u.set_gain(options.gain)
+            u.set_gain(1)
 
             print "cordic_freq = %s" % (eng_notation.num_to_str(ieee802_15_4_pkt.chan_802_15_4.chan_map[self.chan_num]))
             print "data_rate = ", eng_notation.num_to_str(self.data_rate)
             print "samples_per_symbol = ", self.samples_per_symbol
-            print "usrp_decim = ", options.decim_rate
 
             self.src = u
-        else:
-            self.src = gr.file_source(gr.sizeof_gr_complex, options.infile);
-            self.samples_per_symbol = 2
-            self.data_rate = 2000000
+        #else:
+         #   self.src = gr.file_source(gr.sizeof_gr_complex, options.infile);
+          #  self.samples_per_symbol = 2
+           # self.data_rate = 2000000
 
         self.packet_receiver = ieee802_15_4_pkt.ieee802_15_4_demod_pkts(self,
                                 callback=rx_callback,
@@ -72,26 +72,29 @@ def main ():
         fout.write(pcap_pkt_header)
         fout.write(payload)
         fout.flush()
+        print payload
     def rx_callback_old(ok, payload, chan_num):
         st.npkts += 1
         if ok:
             st.nright += 1
 
         (pktno,) = struct.unpack('!H', payload[0:2])
-        print "ok = %5r  pktno = %4d  len(payload) = %4d  %d/%d" % (ok, pktno, len(payload),
-                                                                    st.nright, st.npkts)
-        print "  payload: " + str(map(hex, map(ord, payload)))
-        print " ------------------------"
+        #print "ok = %5r  pktno = %4d  len(payload) = %4d  %d/%d" % (ok, pktno, len(payload),
+        print "ok  " + str(ok)                                                       #st.nright, st.npkts)
+        print "payload:\n" + str(map(hex, map(ord, payload)))
+        #if len(payload) > 28:
+        #    (text,) = struct.unpack_from("16s", payload[26:])
+        #    print " ------------------------"
+        #    print text
+        #    print " ------------------------"
         sys.stdout.flush()
 
         
     parser = OptionParser (option_class=eng_option)
     parser.add_option("-R", "--rx-subdev-spec", type="subdev", default=None,
                       help="select USRP Rx side A or B (default=first one with a daughterboard)")
-    parser.add_option ("-c", "--channel", type="eng_float", default=15,
+    parser.add_option ("-c", "--channel", type="eng_float", default=26,
                        help="Set 802.15.4 Channel to listen on", metavar="FREQ")
-    parser.add_option ("-d", "--decim_rate", type="int", default=25,
-                       help="set decimation rate")
     parser.add_option ("-r", "--data-rate", type="eng_float", default=2000000)
     parser.add_option ("-f", "--filename", type="string",
                        default="rx.dat", help="write data to FILENAME")
@@ -123,13 +126,13 @@ def main ():
             221)           # Link Layer Type = 802.15.4 PHY Channel
     fout.write(pcap_glob_head)
 
-    r= gr.enable_realtime_scheduling()
-    if r == gr.RT_OK:
-        print "Enabled Realtime"
-    else:
-        print "Failed to enable Realtime"
+    #r= gr.enable_realtime_scheduling()
+    #if r == gr.RT_OK:
+    #    print "Enabled Realtime"
+    #else:
+    #    print "Failed to enable Realtime"
 
-    tb = oqpsk_rx_graph(options, rx_callback)
+    tb = oqpsk_rx_graph(options, rx_callback_old)
     tb.start()
 
     tb.wait()
