@@ -37,7 +37,6 @@ GR_PYTHON_INSTALL(
     crc8.py
     ieee802_15_4_pkt.py
     ieee802_15_4.py
-    qa_ucla.py
     DESTINATION ${GR_PYTHON_DIR}/gnuradio/ucla_blks
 )
 
