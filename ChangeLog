@@ -1,3 +1,5 @@
+remove cc1k stuff
+add contiki example
 use new UHD library
 update to current Gnuradio git version
 use cmake
