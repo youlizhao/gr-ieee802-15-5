@@ -25,13 +25,12 @@ class transmit_path(gr.top_block):
 
         ### setup the device
         self.u = uhd.usrp_sink(device_addr="addr0=192.168.10.2", stream_args=uhd.stream_args(cpu_format="fc32"))
-        self.u.set_subdev_spec("A:0", 0)
-        self.u.set_antenna("TX/RX", 0)
-        
+        self.u.set_subdev_spec("A:0", 0)    # this should not be required
+        self.u.set_antenna("TX/RX", 0)      # this should also no be required
+               
         self.u.set_samp_rate(self.sample_rate)
         tmp = self.u.get_samp_rate()
-        assert(tmp == self.sample_rate)
-        
+        assert(tmp == self.sample_rate)     
         
         ### frequency
         self.chan_num = options.channel
